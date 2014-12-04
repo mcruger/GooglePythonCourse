@@ -47,6 +47,43 @@ import sys
 
 ###
 
+def build_dict(filename):
+  #open file, read in words, build dict for results
+  f = open(filename, 'rU')
+  wordDict = {}
+  for line in f:
+    #splitLine = line.split()
+    for word in line.split():
+      word = word.lower()
+      if word in wordDict:
+        wordDict[word] += 1 # found existing key, increase word count
+      else:
+        wordDict[word] = 1
+  f.close()
+  return wordDict
+
+def myFn(tup):
+  return tup[len(tup)-1]
+
+def print_words(filename):
+  wordDict = build_dict(filename)
+
+  for key in sorted(wordDict.keys()):
+    print key + ' ' + str(wordDict[key])
+
+  return
+
+def print_top(filename):
+  wordDict = build_dict(filename)
+  
+  count = 0
+  sortedWordDict = sorted(wordDict.items(), key=myFn, reverse=True)
+
+  for word in sortedWordDict[:20]:
+    print word[0]
+
+  return
+
 # This basic command line argument parsing code is provided and
 # calls the print_words() and print_top() functions which you must define.
 def main():
