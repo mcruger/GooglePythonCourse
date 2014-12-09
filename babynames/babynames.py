@@ -41,7 +41,43 @@ def extract_names(filename):
   ['2006', 'Aaliyah 91', Aaron 57', 'Abagail 895', ' ...]
   """
   # +++your code here+++
-  return
+  namesList = []
+  namesDict = {}
+
+  f = open(filename, 'rU')
+
+  found_yr = False
+  for line in f:
+    
+    #get year. make sure we only look for it until we find it
+    if found_yr == False:
+      yr = re.search(r'Popularity\sin\s(\d\d\d\d)', line)
+      if yr:
+        found_yr = True
+
+    #get rank and names, build dict    
+    match = re.search(r'<td>(\d+)</td><td>(\w+)</td><td>(\w+)</td>',line)
+    if match:
+      #check for existing duplicate key (some files do have dups)
+      #take lower value if dup found
+      if match.group(2) in namesDict: 
+        if namesDict[match.group(2)] > match.group(1):
+          namesDict[match.group(2)] = match.group(1)  
+      else:
+        namesDict[match.group(2)] = match.group(1) 
+
+      if match.group(3) in namesDict: 
+        if namesDict[match.group(3)] > match.group(1):
+          namesDict[match.group(3)] = match.group(1)  
+      else:
+        namesDict[match.group(3)] = match.group(1)       
+  
+  #build list to return
+  namesList.append(yr.group()[-4:])
+  for key in sorted(namesDict.keys()):
+    namesList.append(key + ' ' + namesDict[key])
+   
+  return namesList
 
 
 def main():
@@ -60,9 +96,23 @@ def main():
     summary = True
     del args[0]
 
+  
+
   # +++your code here+++
   # For each filename, get the names, then either print the text output
   # or write it to a summary file
-  
+
+  for filename in args:
+    names = extract_names(filename)
+
+    if summary:
+      f = open(filename + '.summary', 'w')
+      for line in names:
+        f.write(line+'\n')
+      f.close()  
+    else:
+      for line in names:
+        print line
+
 if __name__ == '__main__':
   main()
